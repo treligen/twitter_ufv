@@ -47,9 +47,24 @@ tw_en <- twitteR::searchTwitter('real madrid + valencia',
          text = gsub("http\\S+\\s*", "", text))
 
 
+# barça vs. atletico de madrid --------------------------------------------
+
+# spanish
+tw_barca_atleti <- twitteR::searchTwitter('barcelona + atletico de madrid', 
+                                          n = 10000, 
+                                          since = '2019-04-06', 
+                                          until = '2019-04-07',
+                                          lang = "es") %>% 
+  twListToDF() %>% 
+  as_tibble() %>% 
+  mutate(text = gsub("[\n]", "", text),
+         text = gsub("http\\S+\\s*", "", text))
+
 # save data ---------------------------------------------------------------
 
 saveRDS(tw_es, "data/tw_mad_val_es.RDS")
 
 saveRDS(tw_en, "data/tw_mad_val_en.RDS")
+
+saveRDS(tw_barca_atleti, "data/tw_bar_atl_es.RDS")
 
