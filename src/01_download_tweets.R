@@ -30,8 +30,8 @@ tw_es <- twitteR::searchTwitter('real madrid + valencia',
                                 lang = "es") %>% 
   twListToDF() %>% 
   as_tibble() %>% 
-  mutate(text = gsub("[\n]", "", .$text),
-         text = gsub("http\\S+\\s*", "", .$text))
+  mutate(text = gsub("[\n]", "", text),
+         text = gsub("http\\S+\\s*", "", text))
 
 
 
@@ -43,8 +43,8 @@ tw_en <- twitteR::searchTwitter('real madrid + valencia',
                                 lang = "en") %>% 
   twListToDF() %>% 
   as_tibble() %>% 
-  mutate(text = gsub("[\n]", "", .$text),
-         text = gsub("http\\S+\\s*", "", .$text))
+  mutate(text = gsub("[\n]", "", text),
+         text = gsub("http\\S+\\s*", "", text))
 
 
 # save data ---------------------------------------------------------------
