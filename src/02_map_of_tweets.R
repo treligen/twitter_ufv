@@ -6,7 +6,7 @@ library(sf)
 library(tmaptools)
 library(twitteR)
 library(tm)
-
+library(leaflet)
 
 
 # data --------------------------------------------------------------------
@@ -31,8 +31,25 @@ res <- lookupUsers(mad_val$screenName) %>%
 
 out <- list()
 
-for(i in 1:length(res$location)){
+# sometimes the API stops due to the large amount of request
+for(i in 1209:length(res$location)){
   
   out[[i]] <- tryCatch({geocode_OSM(res$location[i])$coords})
   
 }
+
+xy_mad_val <- bind_rows(lapply(out, bind_rows)) %>% 
+  bind_cols() %>% 
+  mutate(match = "barca_atletico") %>% 
+  rename(long = x,
+         lat = y)
+
+
+# leaflet map -------------------------------------------------------------
+xy_mad_val %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.DarkMatter) %>% 
+  addMarkers(clusterOptions = markerClusterOptions(),
+             label = ~htmltools::htmlEscape(match))
+
+
