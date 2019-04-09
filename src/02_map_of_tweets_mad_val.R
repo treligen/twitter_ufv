@@ -54,8 +54,11 @@ saveRDS(xy_mad_val, "data/geo_mad_val.RDS")
 # leaflet map -------------------------------------------------------------
 xy_mad_val %>% 
   leaflet() %>% 
-  addProviderTiles(providers$CartoDB.DarkMatter) %>% 
+  addProviderTiles(providers$NASAGIBS.ViirsEarthAtNight2012) %>% 
   addMarkers(clusterOptions = markerClusterOptions(),
-             label = ~htmltools::htmlEscape(match))
+             label = ~htmltools::htmlEscape(match)) %>% 
+  setView(lng = -4.4892414,
+          lat = 39.6208638,
+          zoom = 5)
 
 

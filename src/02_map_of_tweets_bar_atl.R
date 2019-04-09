@@ -8,8 +8,22 @@ library(twitteR)
 library(tm)
 library(leaflet)
 
+# api keys ----------------------------------------------------------------
+
+consumer_key <- "RZwNs55phd6c4xPb2ySIWaEqT"
+consumer_secret <- "gU4r84JHsCEkN98H4fLSWB8P5YSrsHxXRm7A6PInoRAo3NDRE9"
+
+access_token <- "1114513154044825601-TCfPtTvGlnp8dttcsgvkHOWZKoPVgh"
+access_secret <- "cc4mK695PM9sIuujv2sv8P0mNpIXFsqW2vJ9rLlcTk50V"
+
+setup_twitter_oauth(consumer_key, 
+                    consumer_secret,
+                    access_token,
+                    access_secret)
+
 
 # data --------------------------------------------------------------------
+
 bar_atl <- read_rds("data/tw_bar_atl_es.RDS") %>% 
   mutate(latitude = as.numeric(latitude),
          longitude = as.numeric(longitude))
@@ -55,11 +69,15 @@ xy_bar_atl <- lapply(out, function(x) if(is.null(x)) c(x = NA, y = NA) else x) %
 # save data
 saveRDS(xy_bar_atl, "data/geo_bar_atl.RDS")
 
+
 # leaflet map -------------------------------------------------------------
 xy_bar_atl %>% 
   leaflet() %>% 
   addProviderTiles(providers$CartoDB.DarkMatter) %>% 
   addMarkers(clusterOptions = markerClusterOptions(),
-             label = ~htmltools::htmlEscape(match))
+             label = ~htmltools::htmlEscape(match)) %>% 
+  setView(lng = -4.4892414,
+          lat = 39.6208638,
+          zoom = 5)
 
 
