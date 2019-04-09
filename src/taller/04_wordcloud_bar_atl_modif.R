@@ -48,7 +48,7 @@ text=str_replace_all(bar_atl$text,"[^[:graph:]]", " ")
 # cargamos también el diccionário de insultos disponible en:
 # "Inventario de Insultos en Castellano", por  Pancracio Celdrán
 
-insultos <- read_delim('data/insultos.txt',
+insultos <- read_delim('data/insultos_utf_8.txt',
                        delim = "\t",
                        col_names = F)
 
