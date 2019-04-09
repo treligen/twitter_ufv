@@ -6,7 +6,10 @@ instalation_packages <- function(){
     "tm",
     "stringr",
     "lubridate",
-    "plotly"
+    "plotly",
+    "leaflet",
+    "tmap",
+    "tmaptools"
   )
   
   pack_to_install <- pack_required[!(pack_required %in% pack_installed)]

@@ -28,23 +28,23 @@ bar_atl <- read_rds("data/tw_bar_atl_es.RDS") %>%
   mutate(latitude = as.numeric(latitude),
          longitude = as.numeric(longitude))
 
+fake_addr <- "street gang blood.  ripspeakeknockerz  rip lil peep ✞ fredo santana i love yu bitch rip a real savage longlive\U0001f499 freedom all my rappers \U0001f54a️abla..."
+
 
 users_bar_atl <- lookupUsers(bar_atl$screenName) %>% 
   twListToDF() %>% 
   as_tibble() %>% 
   mutate(location = tolower(gsub('España', 'Spain', location)),
-         location = gsub('\\p{So}|\\p{Cn}', # remove emojis code
-                         '', 
-                         location, 
-                         perl = TRUE),
-         location = gsub('#', '', location)) %>% 
+         location = str_remove(location, '\\p{So}|\\p{Cn}'),
+         location = str_remove(location, '#'),
+         location = str_remove(location, fake_addr)) %>% 
   filter(is.na(as.numeric(location))) %>% 
   filter(location != "") 
 
 
 out <- list()
 
-# sometimes the API stops due to the large amount of request.....
+
 for(i in 1:length(users_bar_atl$location)){
   
   out[[i]] <- tryCatch({geocode_OSM(users_bar_atl$location[i])$coords})
@@ -60,7 +60,7 @@ for(i in length(out):length(users_bar_atl$location)){
 
 
 xy_bar_atl <- lapply(out, function(x) if(is.null(x)) c(x = NA, y = NA) else x) %>% 
-  lapply(., bind_rows) %>% 
+  lapply(bind_rows) %>% 
   bind_rows() %>% 
   mutate(match = "barca_atletico") %>% 
   rename(longitude = x,

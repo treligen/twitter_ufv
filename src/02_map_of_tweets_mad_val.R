@@ -1,5 +1,10 @@
+#' 
+#' Análisis espacial de los tweets 
+#' durante los partidos
 
 # dependencies ------------------------------------------------------------
+source("src/taller/utils.R")
+instalation_packages()
 
 library(tidyverse)
 library(sf)
@@ -11,54 +16,93 @@ library(leaflet)
 
 # data --------------------------------------------------------------------
 
-users_mad_val <- lookupUsers(mad_val$screenName) %>% 
+#' vamos a utilizar los datos ya descargados para generar un mapa 
+#' interactivo de los tweets.
+#' 
+#' Es conveniente transfomar nuestro objeto tipo
+#' "list" en un objeto tipo "data.frame". Utilizaremos la función 
+#' "twListToDF" para luego analizar la localización de los usuários
+#' con la función 'lookupUsers', ambas del paquete "tweetR". 
+#' 
+#' La variable necesaria para sacar la información se llama "screenName".
+#' 
+
+users_mad_val <- lookupUsers(mad_val$screenName) %>%
+  
+  # transformamos a un "data.frame"...
   twListToDF() %>% 
+  
+  #y a un  "tibble" por ser más conveniente
   as_tibble() %>% 
+  
+  # cambiamos 'España' por 'Spain' y todas las palabras a minúsculas
   mutate(location = tolower(gsub('España', 'Spain', location)),
-         location = gsub('\\p{So}|\\p{Cn}', # remove emojis code
+         
+         # removemos los emojis y sus códigos
+         location = gsub('\\p{So}|\\p{Cn}', 
                          '', 
                          location, 
                          perl = TRUE),
+         
+         # removemos también las almohadillas
          location = gsub('#', '', location)) %>% 
+  
+  # quitamos las localizaciones que son numeros y vacías
   filter(is.na(as.numeric(location))) %>% 
   filter(location != "") 
 
 
+#' con este 'data.frame' podemos buscar las coordenadas geográficas
+#' através de la función "geocode_OSM" del paquete "tmaptools". 
+#' Utilizaremos ese dato para pintar las coordenadas en un mapa.
+#' 
+#' Haremos eso con un bucle 'for' que recorrerá todas las 
+#' localizaciones dentro de 'users_mad_val$location'.
+#' 
+
+#' primero creamos una lista vacía para almacenar los resultados
 out <- list()
 
-# sometimes the API stops due to the large amount of request.....
+#' y ahora lanzamos el bucle. Algunas veces la API impede que 
 for(i in 1:length(users_mad_val$location)){
   
+  # la función 'tryCatch' nos ayuda a seguir ejecutando el bucle 
+  # cuando ninguna localización es encontrada. Nos quedamos solo
+  # con las coordenadas geográficas (coords)
   out[[i]] <- tryCatch({geocode_OSM(users_mad_val$location[i])$coords})
   
 }
 
-# so we carry on the loop
+#' descarguemos muchos datos a la vez. Si eso sucede, 
+#' hay que esperar algunos minutos para seguir con el bucle.
+#' Seguimos con el bucle desde donde ha parado. 
 for(i in length(out):length(users_mad_val$location)){
   
   out[[i]] <- tryCatch({geocode_OSM(users_mad_val$location[i])$coords})
   
 }
 
-
+#' crearemos un conjunto de datos con las coordenadas 
+#' sacadas en el bucle.
+#' 
+#' Lo primero tenemos que identificar los elementos 
+#' que son nulos (NULL) y transformarlos en el mismo formato que 
+#' no sale las informaciones con coordenadas.
 xy_mad_val <- lapply(out, function(x) if(is.null(x)) c(x = NA, y = NA) else x) %>% 
-  lapply(., bind_rows) %>% 
+  
+  # juntos en un 'data.frame'
+  lapply(bind_rows) %>% 
   bind_rows() %>% 
+  
+  # creamos una variable para identificar el partido
   mutate(match = "madrid_valencia") %>% 
+  
+  # cambiamos el nombre de las variables
   rename(longitude = x,
          latitude = y)
 
-# save data
+# guardamos el 'data.frame' para un futuro.
 saveRDS(xy_mad_val, "data/geo_mad_val.RDS")
 
-# leaflet map -------------------------------------------------------------
-xy_mad_val %>% 
-  leaflet() %>% 
-  addProviderTiles(providers$NASAGIBS.ViirsEarthAtNight2012) %>% 
-  addMarkers(clusterOptions = markerClusterOptions(),
-             label = ~htmltools::htmlEscape(match)) %>% 
-  setView(lng = -4.4892414,
-          lat = 39.6208638,
-          zoom = 5)
 
 
