@@ -12,15 +12,15 @@ library(tidytext)
 bar_atl <- read_rds("data/tw_bar_atl_es.RDS") %>% 
   mutate(text = tolower(text),
          text = removeNumbers(gsub("[\n➔]", "", text)),
-         text = chartr('áéíóú','aeiou', text),
-         text = gsub('ñ', 'n', text),
+         text = chartr('áéíóúñ','aeioun', text),
          text = gsub('\\p{So}|\\p{Cn}', '', 
                      text, 
                      perl = TRUE),
          text = gsub('fcbarcelona_es', 'barça', text),
          text = gsub('camp nou', 'campnou', text),
          text = gsub('diego costa', 'diegocosta', text),
-         text = gsub('fc barcelona', 'barça', text))
+         text = gsub('fc barcelona', 'barça', text),
+         text = gsub('barcelona', 'barça', text))
 
 insultos <- read_delim('/Users/lucianopataro/Downloads/text_mining/insultos_utf8.txt',
                        delim = "\t",
