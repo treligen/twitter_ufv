@@ -7,6 +7,14 @@
 #' de un análisis bastante denso y que tarda muchos minutos.
 
 
+# dependencies ------------------------------------------------------------
+
+source("src/taller/utils.R")
+instalation_packages()
+
+library(tidyverse)
+library(leaflet)
+
 # datos -------------------------------------------------------------------
 
 # datos de los tweets del patido barça vs. atleti

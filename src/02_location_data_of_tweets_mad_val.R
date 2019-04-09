@@ -25,7 +25,10 @@ library(leaflet)
 #' con la función 'lookupUsers', ambas del paquete "tweetR". 
 #' 
 #' La variable necesaria para sacar la información se llama "screenName".
-#' 
+
+mad_val <- read_rds("data/tw_mad_val_es.RDS") %>% 
+  mutate(latitude = as.numeric(latitude),
+         longitude = as.numeric(longitude))
 
 users_mad_val <- lookupUsers(mad_val$screenName) %>%
   
@@ -45,25 +48,24 @@ users_mad_val <- lookupUsers(mad_val$screenName) %>%
                          perl = TRUE),
          
          # removemos también las almohadillas
-         location = gsub('#', '', location)) %>% 
+         location = str_remove(location, '#')) %>% 
   
   # quitamos las localizaciones que son numeros y vacías
   filter(is.na(as.numeric(location))) %>% 
   filter(location != "") 
 
 
-#' con este 'data.frame' podemos buscar las coordenadas geográficas
-#' através de la función "geocode_OSM" del paquete "tmaptools". 
-#' Utilizaremos ese dato para pintar las coordenadas en un mapa.
-#' 
-#' Haremos eso con un bucle 'for' que recorrerá todas las 
-#' localizaciones dentro de 'users_mad_val$location'.
-#' 
+# con este 'data.frame' podemos buscar las coordenadas geográficas
+# através de la función "geocode_OSM" del paquete "tmaptools". 
+# Utilizaremos ese dato para pintar las coordenadas en un mapa.
+# 
+# Haremos eso con un bucle 'for' que recorrerá todas las 
+# localizaciones dentro de 'users_mad_val$location'.
 
-#' primero creamos una lista vacía para almacenar los resultados
+# primero creamos una lista vacía para almacenar los resultados
 out <- list()
 
-#' y ahora lanzamos el bucle. Algunas veces la API impede que 
+# y ahora lanzamos el bucle.
 for(i in 1:length(users_mad_val$location)){
   
   # la función 'tryCatch' nos ayuda a seguir ejecutando el bucle 
@@ -73,21 +75,22 @@ for(i in 1:length(users_mad_val$location)){
   
 }
 
-#' descarguemos muchos datos a la vez. Si eso sucede, 
-#' hay que esperar algunos minutos para seguir con el bucle.
-#' Seguimos con el bucle desde donde ha parado. 
+# Algunas veces la API impede que  descarguemos muchos datos a la vez. 
+# Si eso sucede, hay que esperar algunos minutos para seguir con el bucle.
+# Seguimos con el bucle desde donde ha parado. 
 for(i in length(out):length(users_mad_val$location)){
   
   out[[i]] <- tryCatch({geocode_OSM(users_mad_val$location[i])$coords})
   
 }
 
-#' crearemos un conjunto de datos con las coordenadas 
-#' sacadas en el bucle.
-#' 
-#' Lo primero tenemos que identificar los elementos 
-#' que son nulos (NULL) y transformarlos en el mismo formato que 
-#' no sale las informaciones con coordenadas.
+# crearemos un conjunto de datos con las coordenadas 
+# sacadas en el bucle.
+# 
+# Lo primero tenemos que identificar los elementos 
+# que son nulos (NULL) y transformarlos en el mismo formato que 
+# no sale las informaciones con coordenadas.
+
 xy_mad_val <- lapply(out, function(x) if(is.null(x)) c(x = NA, y = NA) else x) %>% 
   
   # juntos en un 'data.frame'
