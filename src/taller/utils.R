@@ -7,6 +7,8 @@ instalation_packages <- function(){
     "stringr",
     "lubridate",
     "plotly",
+    "rgdal",
+    "sf",
     "leaflet",
     "tmap",
     "tmaptools"
@@ -14,8 +16,8 @@ instalation_packages <- function(){
   
   pack_to_install <- pack_required[!(pack_required %in% pack_installed)]
   if (length(pack_to_install) > 0) {
-    cat("Packages not installed:", pack_to_install)
-    install.packages(pack_to_install)
+    cat("Packages not installed:", pack_to_install, "\n")
+    install.packages(pack_to_install, "\n")
   } else{
     cat("All packages required are installed")
   }
