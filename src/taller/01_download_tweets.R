@@ -4,7 +4,7 @@
 #' 10 de abril de 2019
 #' 
 #' En este código se extraen tweets que contengan
-#' las palabras Real Madrid, Valencia y Atlético de Madrid.
+#' las palabras Real Madrid, Valencia, Barcelona y Atlético de Madrid.
 #' 
 #' Para conectarse con la API de twitter, 
 #' es necesario obtener las credenciales para acceder.
