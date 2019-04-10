@@ -15,6 +15,6 @@ El taller está dedicado a:
 El repositorio está estructurado como:
 
 - `src/`: contiene los códigos escritos en R.
-    `src/taller`: códigos específicos para seguir el taller. Estos códigos están comentados con un nivel de detalle muy alto para facilitar su comprensión.
+    - `src/taller`: códigos específicos para seguir el taller. Estos códigos están comentados con un nivel de detalle muy alto para facilitar su comprensión.
 - `data/`: se almacenan la extracción de los tweets. Además, hay un archivo `insultos_utf8.txt` con un diccionario de insultos.
 
