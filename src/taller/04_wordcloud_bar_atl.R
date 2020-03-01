@@ -60,11 +60,11 @@ stop_words <- get_stopwords("es", source = "snowball")
 
 
 # para generar la nube de palabras de los insultos en los tweets necesitamos 
-# isolar las palabras del texto, eliminar las 'stop words' 
+# aislar las palabras del texto, eliminar las 'stop words' 
 # y calcular su frecuencia
 
 insultos_df <- bar_atl %>% 
-  # isolamos las palabras del texto
+  # aislamos las palabras del texto
   unnest_tokens(word, text) %>% 
   
   # eliminamos las 'stop words'
